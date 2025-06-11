@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eisenhower Matrix - Little Bug</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        .retro-font {
+            font-family: 'Press Start 2P', cursive;
+        }
+        .pixel-border {
+            border: 4px solid #28A745;
+            border-radius: 0;
+            box-shadow: 5px 5px 0 #1a682c;
+        }
+        .pixel-border-red {
+            border: 4px solid #E94560;
+            box-shadow: 5px 5px 0 #a32e43;
+        }
+        .pixel-border-yellow {
+            border: 4px solid #FFC107;
+            box-shadow: 5px 5px 0 #b18705;
+        }
+        .pixel-border-blue {
+            border: 4px solid #3B82F6;
+            box-shadow: 5px 5px 0 #1d4ed8;
+        }
+        .pixel-border-green {
+            border: 4px solid #10B981;
+            box-shadow: 5px 5px 0 #047857;
+        }
+        .pixel-border-purple {
+            border: 4px solid #7E22CE;
+            box-shadow: 5px 5px 0 #581C87;
+        }
+        .pixel-border-gray {
+            border: 4px solid #9CA3AF;
+            box-shadow: 5px 5px 0 #6B7280;
+        }
+        .btn-hover:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 3px 3px 0 #1a682c;
+        }
+        .btn-hover-red:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 3px 3px 0 #a32e43;
+        }
+        .btn-hover-yellow:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 3px 3px 0 #b18705;
+        }
+        .btn-hover-blue:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 3px 3px 0 #1d4ed8;
+        }
+        .btn-hover-green:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 3px 3px 0 #047857;
+        }
+        .btn-hover-purple:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 3px 3px 0 #581C87;
+        }
+        .btn-hover-gray:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 3px 3px 0 #6B7280;
+        }
+        
+        /* Hide scrollbar while allowing scrolling */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        
+        body {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+            background-color: #f3f4f6;
+        }
+        
+        .pixel-background {
+            background: repeating-linear-gradient(
+                45deg,
+                #4A4A4A,
+                #4A4A4A 5px,
+                #3d3d3d 5px,
+                #3d3d3d 10px
+            );
+        }
+        .little-bug {
+            animation: bug-bounce 3s infinite;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        .shake {
+            animation: shake 0.5s;
+        }
+        .shame-box {
+            animation: fadeInShame 2s;
+        }
+        .bug-dance {
+            animation: dance 1s infinite;
+        }
+        
+        @keyframes bug-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        
+        @keyframes fadeInShame {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes dance {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(5deg); }
+        }
+        
+        .modal {
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.8);
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+        
+        /* Eisenhower Matrix Styles */
+        .quadrant {
+            min-height: 250px;
+            padding: 15px;
+            margin-bottom: 20px;
+            height: 100%;
+        }
+        
+        .task-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #111827;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .task-item:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .task-checkbox {
+            margin-right: 10px;
+        }
+        
+        .completed-task {
+            text-decoration: line-through;
+            opacity: 0.7;
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .quadrant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .add-task-btn {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            min-width: 90px;
+        }
+        
+        .points-animation {
+            animation: pointsPop 0.8s ease-out;
+        }
+        
+        @keyframes pointsPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+        
+        .points-subtract {
+            animation: pointsSubtract 0.8s ease-out;
+            color: #dc2626;
+        }
+        
+        @keyframes pointsSubtract {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.7); opacity: 0.5; }
+            100% { transform: scale(1); }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .matrix-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quadrant-header {
+                flex-direction: row;
+                align-items: center;
+            }
+            
+            .add-task-btn {
+                margin-top: 0;
+                min-width: auto;
+                padding: 8px 12px;
+            }
+            
+            .add-task-btn span {
+                display: none;
+            }
+            
+            .add-task-btn i {
+                margin-right: 0;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .header-title {
+                margin-top: 10px;
+            }
+            
+            #puntos {
+                position: static;
+                margin-top: 10px;
+                width: auto;
+                justify-content: center;
+            }
+            
+            .puntos-text {
+                display: none;
+            }
+            
+            #contador-puntos {
+                font-size: 1.1rem;
+            }
+            
+            .puntos-container {
+                padding: 8px 12px;
+            }
+            
+            .modal-content {
+                width: 90%;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            
+            .modal-rules-content {
+                padding: 20px;
+            }
+            
+            .rules-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quadrant-title {
+                font-size: 12px;
+                line-height: 1.4;
+            }
+            
+            .task-item {
+                font-size: 14px;
+            }
+        }
+        
+        .quadrant-title {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .modal-content {
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .modal-rules-content {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .rules-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        @media (min-width: 768px) {
+            .rules-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="retro-font text-gray-800 flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="bg-green-700 p-4 border-b-4 border-green-500">
+        <div class="container mx-auto flex flex-col md:flex-row items-center justify-between px-2 header-content">
+            <div class="flex items-center">
+                <i class="fa-solid fa-bug little-bug text-4xl sm:text-3xl md:text-4xl lg:text-5xl text-white"></i>
+                <div class="ml-2 md:ml-4 header-title">
+                    <p class="text-xs sm:text-sm md:text-base lg:text-lg text-white italic">Little Bug's Productivity</p>
+                    <h1 class="text-base sm:text-lg md:text-xl lg:text-2xl text-white">
+                        EISENHOWER MATRIX
+                    </h1>
+                </div>
+            </div>
+            <!-- Puntos -->
+            <div id="puntos" class="flex items-center mt-3 md:mt-0">
+                <div class="p-1 sm:p-2 pixel-border-yellow bg-yellow-100 text-gray-800 flex items-center text-xs sm:text-base puntos-container">
+                    <span class="mr-1 sm:mr-2">🏆</span>
+                    <span id="contador-puntos" class="font-bold">0</span>
+                    <span class="ml-0 sm:ml-1 puntos-text">Puntos</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sección Principal - Matriz de Eisenhower -->
+    <main class="flex-grow container mx-auto px-2 sm:px-4 py-4 sm:py-8 mb-4 md:mb-0">
+        <div class="max-w-5xl mx-auto bg-gray-800 text-white p-4 sm:p-6 pixel-border fade-in text-xs sm:text-sm">
+            <div class="matrix-grid">
+                <!-- Cuadrante 1: Urgente e Importante -->
+                <div class="quadrant pixel-border-green bg-green-100">
+                    <div class="quadrant-header">
+                        <h3 class="text-base md:text-lg font-bold text-green-800 quadrant-title">
+                            URGENTE<br>IMPORTANTE
+                        </h3>
+                        <button class="add-task-btn pixel-border-green bg-green-500 text-white btn-hover-green" data-quadrant="1" data-name="Urgente e Importante">
+                            <i class="fas fa-plus"></i> <span class="hidden md:inline">Tarea</span>
+                        </button>
+                    </div>
+                    <p class="text-xs text-green-700 mb-3">Haz esto ahora mismo</p>
+                    <div id="quadrant-1-tasks" class="task-list">
+                        <p class="text-gray-500 italic text-center py-4">No hay tareas<br>¡Agrega una!</p>
+                    </div>
+                </div>
+                
+                <!-- Cuadrante 2: Importante pero no Urgente -->
+                <div class="quadrant pixel-border-yellow bg-yellow-100">
+                    <div class="quadrant-header">
+                        <h3 class="text-base md:text-lg font-bold text-yellow-800 quadrant-title">
+                            IMPORTANTE<br>NO URGENTE
+                        </h3>
+                        <button class="add-task-btn pixel-border-yellow bg-yellow-500 text-gray-800 btn-hover-yellow" data-quadrant="2" data-name="Importante pero no Urgente">
+                            <i class="fas fa-plus"></i> <span class="hidden md:inline">Tarea</span>
+                        </button>
+                    </div>
+                    <p class="text-xs text-yellow-700 mb-3">Planifica para esto</p>
+                    <div id="quadrant-2-tasks" class="task-list">
+                        <p class="text-gray-500 italic text-center py-4">No hay tareas<br>¡Agrega una!</p>
+                    </div>
+                </div>
+                
+                <!-- Cuadrante 3: Urgente pero no Importante -->
+                <div class="quadrant pixel-border-blue bg-blue-100">
+                    <div class="quadrant-header">
+                        <h3 class="text-base md:text-lg font-bold text-blue-800 quadrant-title">
+                            URGENTE<br>NO IMPORTANTE
+                        </h3>
+                        <button class="add-task-btn pixel-border-blue bg-blue-500 text-white btn-hover-blue" data-quadrant="3" data-name="Urgente pero no Importante">
+                            <i class="fas fa-plus"></i> <span class="hidden md:inline">Tarea</span>
+                        </button>
+                    </div>
+                    <p class="text-xs text-blue-700 mb-3">Delega si es posible</p>
+                    <div id="quadrant-3-tasks" class="task-list">
+                        <p class="text-gray-500 italic text-center py-4">No hay tareas<br>¡Agrega una!</p>
+                    </div>
+                </div>
+                
+                <!-- Cuadrante 4: No Urgente y no Importante -->
+                <div class="quadrant pixel-border-red bg-red-100">
+                    <div class="quadrant-header">
+                        <h3 class="text-base md:text-lg font-bold text-red-800 quadrant-title">
+                            NO URGENTE<br>NO IMPORTANTE
+                        </h3>
+                        <button class="add-task-btn pixel-border-red bg-red-500 text-white btn-hover-red" data-quadrant="4" data-name="No Urgente y no Importante">
+                            <i class="fas fa-plus"></i> <span class="hidden md:inline">Tarea</span>
+                        </button>
+                    </div>
+                    <p class="text-xs text-red-700 mb-3">Elimina o pospone</p>
+                    <div id="quadrant-4-tasks" class="task-list">
+                        <p class="text-gray-500 italic text-center py-4">No hay tareas<br>¡Agrega una!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para agregar tarea -->
+    <div id="modal-add-task" class="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-gray-800 p-6 pixel-border max-w-md w-full modal-content">
+            <h2 class="text-xl md:text-2xl mb-4 text-center text-green-400" id="modal-task-title">NUEVA TAREA</h2>
+            <div class="mb-4">
+                <label for="task-text" class="block mb-2 text-white">Descripción:</label>
+                <input type="text" id="task-text" class="w-full p-2 bg-gray-700 border-2 border-green-500 text-white">
+            </div>
+            <div class="flex gap-4">
+                <button id="task-cancel" class="pixel-border-red bg-red-500 text-white px-4 py-2 flex-grow">
+                    CANCELAR
+                </button>
+                <button id="task-save" class="pixel-border bg-green-500 text-white px-4 py-2 flex-grow">
+                    GUARDAR
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Reglas -->
+    <div id="modal-reglas" class="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-gray-800 p-6 pixel-border max-w-2xl w-full modal-content modal-rules-content">
+            <h2 class="text-xl md:text-2xl mb-4 text-center text-yellow-400">REGLAS DE LA MATRIZ DE EISENHOWER</h2>
+            <div class="mb-4 text-white text-sm">
+                <div class="rules-grid mb-6">
+                    <div class="p-4 pixel-border-green bg-green-100 text-green-800">
+                        <h3 class="font-bold mb-2">URGENTE<br>IMPORTANTE</h3>
+                        <p class="text-xs">Estas tareas deben ser realizadas de inmediato. Ejemplos: una emergencia, una tarea con fecha límite próxima.</p>
+                    </div>
+                    <div class="p-4 pixel-border-yellow bg-yellow-100 text-yellow-800">
+                        <h3 class="font-bold mb-2">IMPORTANTE<br> NO URGENTE</h3>
+                        <p class="text-xs">Tareas cruciales para tu éxito a largo plazo. Ejemplos: planificación estratégica, desarrollo personal.</p>
+                    </div>
+                    <div class="p-4 pixel-border-blue bg-blue-100 text-blue-800">
+                        <h3 class="font-bold mb-2">URGENTE<br> NO IMPORTANTE</h3>
+                        <p class="text-xs">Interrupciones que parecen urgentes pero no son importantes. Ejemplos: llamadas no críticas, correos menores.</p>
+                    </div>
+                    <div class="p-4 pixel-border-red bg-red-100 text-red-800">
+                        <h3 class="font-bold mb-2">NO URGENTE<br> NO IMPORTANTE</h3>
+                        <p class="text-xs">Distracciones o pérdidas de tiempo. Ejemplos: redes sociales excesivas, charlas irrelevantes.</p>
+                    </div>
+                </div>
+                
+                <h3 class="text-lg text-yellow-300 mb-2">Beneficios:</h3>
+                <ul class="list-disc pl-5 mb-4">
+                    <li class="mb-2"><span class="font-bold">Mayor productividad:</span> Enfoca tu energía en lo que realmente importa</li>
+                    <li class="mb-2"><span class="font-bold">Reducción del estrés:</span> Evita las "trampas de la urgencia"</li>
+                    <li class="mb-2"><span class="font-bold">Mejor gestión del tiempo:</span> Identifica qué tareas delegar o eliminar</li>
+                    <li><span class="font-bold">Mayor efectividad:</span> Logra tus objetivos a largo plazo</li>
+                </ul>
+                
+                <h3 class="text-lg text-green-300 mb-2">Sistema de puntos:</h3>
+                <ul class="list-disc pl-5">
+                    <li class="mb-2">Completar tareas Urgentes: <span class="font-bold">20 puntos</span> (son las más valiosas)</li>
+                    <li class="mb-2">Completar tareas Importantes: <span class="font-bold">15 puntos</span></li>
+                    <li class="mb-2">Completar tareas No Importantes: <span class="font-bold">10 puntos</span></li>
+                    <li class="mb-2">Completar tareas No Urgentes: <span class="font-bold">5 puntos</span></li>
+                    <li>Al desmarcar una tarea se restan los puntos previamente ganados</li>
+                    <li>Cada 100 puntos recibirás un chiste de informática</li>
+                </ul>
+            </div>
+            <button id="cerrar-reglas" class="pixel-border bg-green-500 text-white px-4 py-2 w-full">
+                ENTENDIDO
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de chiste -->
+    <div id="modal-chiste" class="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-gray-800 p-6 pixel-border-yellow max-w-md w-full modal-content">
+            <h2 class="text-xl md:text-2xl mb-4 text-center text-yellow-400">¡RECOMPENSA!</h2>
+            <div class="flex justify-center mb-4">
+                <i class="fa-solid fa-bug text-6xl text-yellow-400 bug-dance"></i>
+            </div>
+            <p class="mb-4 text-center text-white">¡Felicidades!<br>¡<span id="puntos-alcanzados" class="font-bold">100</span> Puntos!<br>Tu recompensa:</p>
+            <div class="bg-yellow-100 p-4 mb-4 text-gray-800 italic text-center">
+                <p id="chiste-texto">¿Por qué los programadores prefieren el modo oscuro? ¡Porque la luz atrae bugs!</p>
+            </div>
+            <button id="cerrar-chiste" class="pixel-border bg-green-500 text-white px-4 py-2 w-full">
+                ¡GRACIAS!
+            </button>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <footer class="bg-gray-900 p-2 sm:p-4 border-t-4 border-green-500 mt-auto">
+        <div class="container mx-auto flex flex-col sm:flex-row justify-between items-center">
+            <p class="mb-2 sm:mb-0 text-center text-white text-xs sm:text-sm">
+            <span class="text-center flex flex-col">
+                <span>© 2025 Little Bug Productivity</span>
+                <span>Epically organize your tasks</span>
+            </span>
+            </p>
+            <button id="reglas-btn" class="pixel-border bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 sm:px-6 sm:py-3 transition-all btn-hover flex items-center justify-center text-xs sm:text-base mt-2 sm:mt-0">
+                <i class="fas fa-book mr-2"></i> REGLAS DEL JUEGO
+            </button>
+        </div>
+    </footer>
+
+    <script>
+        // Datos iniciales
+        const puntosPorCuadrante = {
+            1: 20, // Urgente e Importante
+            2: 15, // Importante no Urgente
+            3: 10, // Urgente no Importante
+            4: 5   // No Urgente no Importante
+        };
+        
+        const nombresCuadrantes = {
+            1: "URGENTE E IMPORTANTE",
+            2: "IMPORTANTE NO URGENTE",
+            3: "URGENTE NO IMPORTANTE",
+            4: "NO URGENTE NO IMPORTANTE"
+        };
+        
+        const chistesInformatica = [
+            "¿Por qué los programadores siempre confunden Halloween con Navidad? Porque OCT 31 = DEC 25",
+            "Hay 10 tipos de personas en el mundo: Las que entienden binario y las que no.",
+            "¿Qué le dice un bit a otro? Nos vemos en el bus.",
+            "¿Por qué los programadores prefieren el modo oscuro? ¡Porque la luz atrae bugs!",
+            "¿Qué es un terapeuta? 1024 gigapeutas",
+            "¿Qué le dice un GIF a un JPG? 'Anímate, hombre!'",
+            "¿Cómo se llama el campeón de buceo informático? ¡El que tiene mejor Al-goritmo!"
+        ];
+        
+        // Elementos del DOM
+        const puntosElement = document.getElementById('contador-puntos');
+        const reglasBtn = document.getElementById('reglas-btn');
+        const cerrarReglas = document.getElementById('cerrar-reglas');
+        const modalReglas = document.getElementById('modal-reglas');
+        const modalAddTask = document.getElementById('modal-add-task');
+        const taskText = document.getElementById('task-text');
+        const taskSave = document.getElementById('task-save');
+        const taskCancel = document.getElementById('task-cancel');
+        const modalChiste = document.getElementById('modal-chiste');
+        const cerrarChiste = document.getElementById('cerrar-chiste');
+        const chisteTexto = document.getElementById('chiste-texto');
+        const puntosAlcanzados = document.getElementById('puntos-alcanzados');
+        const modalTaskTitle = document.getElementById('modal-task-title');
+        
+        // Variables de estado
+        let puntos = 0;
+        let tareas = [
+
+        ];
+        let cuadranteActual = null;
+        let chistesMostrados = [];
+
+        // Cargar datos desde localStorage
+        function cargarDatos() {
+            if (localStorage.getItem('puntosEisenhower')) {
+                puntos = parseInt(localStorage.getItem('puntosEisenhower'));
+                puntosElement.textContent = puntos;
+            }
+            
+            if (localStorage.getItem('tareasEisenhower')) {
+                tareas = JSON.parse(localStorage.getItem('tareasEisenhower'));
+                renderizarTareas();
+            }
+        }
+
+        // Guardar datos en localStorage
+        function guardarDatos() {
+            localStorage.setItem('puntosEisenhower', puntos);
+            localStorage.setItem('tareasEisenhower', JSON.stringify(tareas));
+        }
+
+        // Renderizar todas las tareas
+        function renderizarTareas() {
+            for (let i = 1; i <= 4; i++) {
+                renderizarTareasCuadrante(i);
+            }
+        }
+
+        // Renderizar tareas de un cuadrante específico
+        function renderizarTareasCuadrante(cuadrante) {
+            const contenedor = document.getElementById(`quadrant-${cuadrante}-tasks`);
+            contenedor.innerHTML = '';
+            
+            const tareasCuadrante = tareas.filter(t => t.cuadrante === cuadrante);
+            
+            if (tareasCuadrante.length === 0) {
+                contenedor.innerHTML = '<p class="text-gray-500 italic text-center py-4">No hay tareas<br>¡Agrega una!</p>';
+                return;
+            }
+            
+            tareasCuadrante.forEach(tarea => {
+                const tareaElement = document.createElement('div');
+                tareaElement.className = `task-item ${tarea.completada ? 'completed-task' : ''}`;
+                tareaElement.dataset.id = tarea.id;
+                
+                tareaElement.innerHTML = `
+                    <input type="checkbox" class="task-checkbox" ${tarea.completada ? 'checked' : ''}>
+                    <span class="task-text flex-grow">${tarea.texto}</span>
+                    <button class="delete-task text-red-500 hover:text-red-700 px-2">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                
+                contenedor.appendChild(tareaElement);
+                
+                // Evento para marcar como completada
+                const checkbox = tareaElement.querySelector('.task-checkbox');
+                checkbox.addEventListener('change', () => {
+                    completarTarea(tarea.id, checkbox.checked);
+                });
+                
+                // Evento para eliminar tarea
+                const deleteBtn = tareaElement.querySelector('.delete-task');
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    eliminarTarea(tarea.id);
+                });
+            });
+        }
+
+        // Completar una tarea
+        function completarTarea(id, completada) {
+            const tarea = tareas.find(t => t.id === id);
+            if (!tarea) return;
+            
+            // Guardar el estado anterior para determinar si hubo cambio
+            const estadoAnterior = tarea.completada;
+            tarea.completada = completada;
+            
+            // Solo procesar cambios de estado
+            if (estadoAnterior !== completada) {
+                const puntosCuadrante = puntosPorCuadrante[tarea.cuadrante];
+                
+                if (completada) {
+                    // Sumar puntos cuando se marca como completada
+                    puntos += puntosCuadrante;
+                    
+                    // Animación de puntos
+                    puntosElement.textContent = puntos;
+                    puntosElement.classList.add('points-animation');
+                    setTimeout(() => {
+                        puntosElement.classList.remove('points-animation');
+                    }, 800);
+                    
+                    // Verificar si se alcanzaron 100 puntos
+                    verificarRecompensa();
+                } else {
+                    // Restar puntos cuando se desmarca
+                    puntos -= puntosCuadrante;
+                    
+                    // Animación de resta de puntos
+                    puntosElement.textContent = puntos;
+                    puntosElement.classList.add('points-subtract');
+                    setTimeout(() => {
+                        puntosElement.classList.remove('points-subtract');
+                    }, 800);
+                }
+            }
+            
+            guardarDatos();
+            renderizarTareasCuadrante(tarea.cuadrante);
+        }
+
+        // Eliminar una tarea
+        function eliminarTarea(id) {
+            const tarea = tareas.find(t => t.id === id);
+            if (!tarea) return;
+            
+            // Si la tarea estaba completada, restar puntos
+            //if (tarea.completada) {
+            //    const puntosCuadrante = puntosPorCuadrante[tarea.cuadrante];
+            //    puntos -= puntosCuadrante;
+            //    puntosElement.textContent = puntos;
+            //}
+            
+            // Eliminar tarea del array
+            tareas = tareas.filter(t => t.id !== id);
+            
+            guardarDatos();
+            renderizarTareas();
+        }
+
+        // Agregar nueva tarea
+        function agregarTarea() {
+            const texto = taskText.value.trim();
+            if (!texto) return;
+            
+            const nuevaTarea = {
+                id: Date.now(),
+                texto: texto,
+                cuadrante: cuadranteActual,
+                completada: false,
+                fecha: new Date().toISOString()
+            };
+            
+            tareas.push(nuevaTarea);
+            guardarDatos();
+            renderizarTareasCuadrante(cuadranteActual);
+            
+            // Resetear modal
+            taskText.value = '';
+            modalAddTask.classList.remove('active');
+        }
+
+        // Verificar si se debe mostrar un chiste
+        function verificarRecompensa() {
+            const nivelActual = Math.floor(puntos / 100);
+            
+            // Verificar si ya mostramos este nivel de recompensa
+            if (!chistesMostrados.includes(nivelActual)) {
+                chistesMostrados.push(nivelActual);
+                
+                // Seleccionar un chiste aleatorio que no hayamos mostrado recientemente
+                const chistesDisponibles = chistesInformatica.filter((_, i) => 
+                    !chistesMostrados.slice(-3).includes(i)
+                );
+                
+                let chiste;
+                if (chistesDisponibles.length > 0) {
+                    chiste = chistesDisponibles[Math.floor(Math.random() * chistesDisponibles.length)];
+                } else {
+                    chiste = chistesInformatica[Math.floor(Math.random() * chistesInformatica.length)];
+                }
+                
+                // Actualizar y mostrar el modal
+                puntosAlcanzados.textContent = nivelActual * 100;
+                chisteTexto.textContent = chiste;
+                
+                // Mostrar después de un pequeño retraso
+                setTimeout(() => {
+                    modalChiste.classList.add('active');
+                }, 1000);
+            }
+        }
+
+        // Event Listeners
+        document.querySelectorAll('.add-task-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                cuadranteActual = parseInt(btn.dataset.quadrant);
+                const nombreCuadrante = btn.dataset.name;
+                modalTaskTitle.textContent = `NUEVA TAREA: ${nombreCuadrante}`;
+                modalAddTask.classList.add('active');
+                taskText.focus();
+            });
+        });
+
+        taskSave.addEventListener('click', agregarTarea);
+        
+        taskText.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                agregarTarea();
+            }
+        });
+        
+        taskCancel.addEventListener('click', () => {
+            modalAddTask.classList.remove('active');
+            taskText.value = '';
+        });
+        
+        reglasBtn.addEventListener('click', () => {
+            modalReglas.classList.add('active');
+        });
+        
+        cerrarReglas.addEventListener('click', () => {
+            modalReglas.classList.remove('active');
+        });
+        
+        cerrarChiste.addEventListener('click', () => {
+            modalChiste.classList.remove('active');
+        });
+
+        // Cerrar modales al hacer clic fuera del contenido
+        window.addEventListener('click', (e) => {
+            if (e.target === modalAddTask) {
+                modalAddTask.classList.remove('active');
+            }
+            if (e.target === modalReglas) {
+                modalReglas.classList.remove('active');
+            }
+            if (e.target === modalChiste) {
+                modalChiste.classList.remove('active');
+            }
+        });
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarDatos();
+            renderizarTareas();
+        });
+    </script>
+</body>
+</html>
