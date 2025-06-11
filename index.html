@@ -360,16 +360,16 @@
         <div class="max-w-5xl mx-auto bg-gray-800 text-white p-4 sm:p-6 pixel-border fade-in text-xs sm:text-sm">
             <div class="matrix-grid">
                 <!-- Cuadrante 1: Urgente e Importante -->
-                <div class="quadrant pixel-border-green bg-green-100">
+                <div class="quadrant pixel-border-red bg-red-100">
                     <div class="quadrant-header">
-                        <h3 class="text-base md:text-lg font-bold text-green-800 quadrant-title">
+                        <h3 class="text-base md:text-lg font-bold text-red-800 quadrant-title">
                             URGENTE<br>IMPORTANTE
                         </h3>
-                        <button class="add-task-btn pixel-border-green bg-green-500 text-white btn-hover-green" data-quadrant="1" data-name="Urgente e Importante">
+                        <button class="add-task-btn pixel-border-red bg-red-500 text-white btn-hover-red" data-quadrant="1" data-name="Urgente e Importante">
                             <i class="fas fa-plus"></i> <span class="hidden md:inline">Tarea</span>
                         </button>
                     </div>
-                    <p class="text-xs text-green-700 mb-3">Haz esto ahora mismo</p>
+                    <p class="text-xs text-red-700 mb-3">Haz esto ahora mismo</p>
                     <div id="quadrant-1-tasks" class="task-list">
                         <p class="text-gray-500 italic text-center py-4">No hay tareas<br>¡Agrega una!</p>
                     </div>
@@ -408,16 +408,16 @@
                 </div>
                 
                 <!-- Cuadrante 4: No Urgente y no Importante -->
-                <div class="quadrant pixel-border-red bg-red-100">
+                <div class="quadrant pixel-border-green bg-green-100">
                     <div class="quadrant-header">
-                        <h3 class="text-base md:text-lg font-bold text-red-800 quadrant-title">
+                        <h3 class="text-base md:text-lg font-bold text-green-800 quadrant-title">
                             NO URGENTE<br>NO IMPORTANTE
                         </h3>
-                        <button class="add-task-btn pixel-border-red bg-red-500 text-white btn-hover-red" data-quadrant="4" data-name="No Urgente y no Importante">
+                        <button class="add-task-btn pixel-border-green bg-green-500 text-white btn-hover-red" data-quadrant="4" data-name="No Urgente y no Importante">
                             <i class="fas fa-plus"></i> <span class="hidden md:inline">Tarea</span>
                         </button>
                     </div>
-                    <p class="text-xs text-red-700 mb-3">Elimina o pospone</p>
+                    <p class="text-xs text-green-700 mb-3">Elimina o pospone</p>
                     <div id="quadrant-4-tasks" class="task-list">
                         <p class="text-gray-500 italic text-center py-4">No hay tareas<br>¡Agrega una!</p>
                     </div>
@@ -493,19 +493,23 @@
         </div>
     </div>
 
-    <!-- Modal de chiste -->
-    <div id="modal-chiste" class="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+    <!-- Modal de minijuego -->
+    <div id="modal-minigame" class="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
         <div class="bg-gray-800 p-6 pixel-border-yellow max-w-md w-full modal-content">
-            <h2 class="text-xl md:text-2xl mb-4 text-center text-yellow-400">¡RECOMPENSA!</h2>
+            <h2 class="text-xl md:text-2xl mb-4 text-center text-yellow-400">¡MINI-JUEGO!</h2>
             <div class="flex justify-center mb-4">
-                <i class="fa-solid fa-bug text-6xl text-yellow-400 bug-dance"></i>
+                <i class="fa-solid fa-bug text-6xl text-yellow-400"></i>
             </div>
-            <p class="mb-4 text-center text-white">¡Felicidades!<br>¡<span id="puntos-alcanzados" class="font-bold">100</span> Puntos!<br>Tu recompensa:</p>
-            <div class="bg-yellow-100 p-4 mb-4 text-gray-800 italic text-center">
-                <p id="chiste-texto">¿Por qué los programadores prefieren el modo oscuro? ¡Porque la luz atrae bugs!</p>
+            <p class="mb-4 text-center text-white">¡Atrapa todos los bugs que puedas en 30 segundos!</p>
+            <div class="text-center mb-4 text-white">
+                <p>Tiempo: <span id="minigame-timer">30</span> segundos</p>
+                <p>Puntuación: <span id="minigame-score">0</span></p>
             </div>
-            <button id="cerrar-chiste" class="pixel-border bg-green-500 text-white px-4 py-2 w-full">
-                ¡GRACIAS!
+            <div id="minigame-container" style="position: relative; width: 100%; height: 300px; background-color: #333; border: 2px solid #444; overflow: hidden;">
+                <!-- Bugs will be created here dynamically -->
+            </div>
+            <button id="cerrar-minigame" class="pixel-border bg-green-500 text-white px-4 py-2 w-full mt-4">
+                CERRAR
             </button>
         </div>
     </div>
@@ -541,15 +545,6 @@
             4: "NO URGENTE NO IMPORTANTE"
         };
         
-        const chistesInformatica = [
-            "¿Por qué los programadores siempre confunden Halloween con Navidad? Porque OCT 31 = DEC 25",
-            "Hay 10 tipos de personas en el mundo: Las que entienden binario y las que no.",
-            "¿Qué le dice un bit a otro? Nos vemos en el bus.",
-            "¿Por qué los programadores prefieren el modo oscuro? ¡Porque la luz atrae bugs!",
-            "¿Qué es un terapeuta? 1024 gigapeutas",
-            "¿Qué le dice un GIF a un JPG? 'Anímate, hombre!'",
-            "¿Cómo se llama el campeón de buceo informático? ¡El que tiene mejor Al-goritmo!"
-        ];
         
         // Elementos del DOM
         const puntosElement = document.getElementById('contador-puntos');
@@ -560,10 +555,10 @@
         const taskText = document.getElementById('task-text');
         const taskSave = document.getElementById('task-save');
         const taskCancel = document.getElementById('task-cancel');
-        const modalChiste = document.getElementById('modal-chiste');
-        const cerrarChiste = document.getElementById('cerrar-chiste');
-        const chisteTexto = document.getElementById('chiste-texto');
-        const puntosAlcanzados = document.getElementById('puntos-alcanzados');
+        const modalMinigame = document.getElementById('modal-minigame');
+        const cerrarMinigame = document.getElementById('cerrar-minigame');
+        const minigameTimerElement = document.getElementById('minigame-timer');
+        const minigameScoreElement = document.getElementById('minigame-score');
         const modalTaskTitle = document.getElementById('modal-task-title');
         
         // Variables de estado
@@ -726,7 +721,7 @@
             modalAddTask.classList.remove('active');
         }
 
-        // Verificar si se debe mostrar un chiste
+        // Verificar si se debe mostrar el minijuego
         function verificarRecompensa() {
             const nivelActual = Math.floor(puntos / 100);
             
@@ -734,27 +729,82 @@
             if (!chistesMostrados.includes(nivelActual)) {
                 chistesMostrados.push(nivelActual);
                 
-                // Seleccionar un chiste aleatorio que no hayamos mostrado recientemente
-                const chistesDisponibles = chistesInformatica.filter((_, i) => 
-                    !chistesMostrados.slice(-3).includes(i)
-                );
-                
-                let chiste;
-                if (chistesDisponibles.length > 0) {
-                    chiste = chistesDisponibles[Math.floor(Math.random() * chistesDisponibles.length)];
-                } else {
-                    chiste = chistesInformatica[Math.floor(Math.random() * chistesInformatica.length)];
-                }
-                
-                // Actualizar y mostrar el modal
-                puntosAlcanzados.textContent = nivelActual * 100;
-                chisteTexto.textContent = chiste;
-                
-                // Mostrar después de un pequeño retraso
-                setTimeout(() => {
-                    modalChiste.classList.add('active');
-                }, 1000);
+                // Mostrar el minijuego
+                modalMinigame.classList.add('active');
+                startMinigame();
             }
+        }
+
+        // Minigame functions
+        let gameTime = 30;
+        let gameScore = 0;
+        let gameInterval;
+        let bugCreationInterval;
+
+        function startMinigame() {
+            // Reset game state
+            gameTime = 30;
+            gameScore = 0;
+            minigameTimerElement.textContent = gameTime;
+            minigameScoreElement.textContent = gameScore;
+
+            // Clear the container
+            const container = document.getElementById('minigame-container');
+            container.innerHTML = '';
+
+            // Start the timer
+            gameInterval = setInterval(() => {
+                gameTime--;
+                minigameTimerElement.textContent = gameTime;
+                
+                if (gameTime <= 0) {
+                    endMinigame();
+                }
+            }, 1000);
+
+            // Start creating bugs
+            createBug();
+        }
+
+        function createBug() {
+            if (gameTime <= 0) return;
+            
+            const container = document.getElementById('minigame-container');
+            const bug = document.createElement('div');
+            bug.className = 'bug';
+            bug.innerHTML = '<i class="fa-solid fa-bug"></i>';
+            bug.style.position = 'absolute';
+            bug.style.left = Math.random() * (container.offsetWidth - 30) + 'px';
+            bug.style.top = Math.random() * (container.offsetHeight - 30) + 'px';
+            bug.style.color = 'yellow';
+            bug.style.fontSize = '30px';
+            bug.style.cursor = 'pointer';
+            bug.style.zIndex = '10';
+            bug.addEventListener('click', () => {
+                // When clicked, remove the bug and add to score
+                bug.remove();
+                gameScore++;
+                minigameScoreElement.textContent = gameScore;
+            });
+
+            container.appendChild(bug);
+
+            // Schedule next bug
+            bugCreationInterval = setTimeout(createBug, 500 + Math.random() * 1000);
+        }
+
+        function endMinigame() {
+            clearInterval(gameInterval);
+            clearTimeout(bugCreationInterval);
+            
+            // Add minigame score to main points
+            puntos += gameScore;
+            puntosElement.textContent = puntos;
+            guardarDatos();
+            
+            // Show game over message
+            const container = document.getElementById('minigame-container');
+            container.innerHTML = `<div class="text-center text-white text-xl p-4">¡Juego terminado! Ganaste ${gameScore} puntos extra.</div>`;
         }
 
         // Event Listeners
@@ -789,8 +839,8 @@
             modalReglas.classList.remove('active');
         });
         
-        cerrarChiste.addEventListener('click', () => {
-            modalChiste.classList.remove('active');
+        cerrarMinigame.addEventListener('click', () => {
+            modalMinigame.classList.remove('active');
         });
 
         // Cerrar modales al hacer clic fuera del contenido
